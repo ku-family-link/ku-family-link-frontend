@@ -12,7 +12,7 @@ export default function LoginSelect() {
         {/* Fitbit Login Button */}
         <button 
           className="flex items-center w-48 h-10 bg-green-200 rounded-full px-4"
-          onClick={() => navigate('/fitbit-login')}
+          onClick={() => navigate('/FitbitLogin')}
         >
           <img
             src={fitbitLogo}
