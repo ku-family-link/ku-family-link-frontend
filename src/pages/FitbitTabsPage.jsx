@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import HomeTab from '../FitbitTabs/HomeTab';
 import HealthTab from '../FitbitTabs/HealthTab';
-import LocationTab from '../FitbitTabs/LocationTab';
 import AlertTab from '../FitbitTabs/AlertTab';
 import MyPageTab from '../FitbitTabs/MyPageTab';
 
@@ -12,7 +11,6 @@ const FitbitTabsPage = () => {
     switch (selectedTab) {
       case 'home': return <HomeTab />;
       case 'health': return <HealthTab />;
-      case 'location': return <LocationTab />;
       case 'alert': return <AlertTab />;
       case 'mypage': return <MyPageTab />;
       default: return <HomeTab />;
@@ -28,7 +26,6 @@ const FitbitTabsPage = () => {
       <div className="fixed bottom-0 w-full justify-around flex bg-white border-t py-2 text-sm">
         <button onClick={() => setSelectedTab('home')} className={`flex-1 ${selectedTab === 'home' ? 'text-green-600' : 'text-black'}`}>홈</button>
         <button onClick={() => setSelectedTab('health')} className={`flex-1 ${selectedTab === 'health' ? 'text-green-600' : 'text-black'}`}>건강정보</button>
-        <button onClick={() => setSelectedTab('location')} className={`flex-1 ${selectedTab === 'location' ? 'text-green-600' : 'text-black'}`}>위치</button>
         <button onClick={() => setSelectedTab('alert')} className={`flex-1 ${selectedTab === 'alert' ? 'text-green-600' : 'text-black'}`}>알림</button>
         <button onClick={() => setSelectedTab('mypage')} className={`flex-1 ${selectedTab === 'mypage' ? 'text-green-600' : 'text-black'}`}>내 정보</button>
       </div>

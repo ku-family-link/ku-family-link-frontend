@@ -65,6 +65,9 @@ const HealthTab = () => {
         <div className="bg-white rounded-lg p-4 text-sm mb-10">
           최근 3일간 걸음 수가 약간 감소 추세입니다. 가능하다면 가벼운 산책을 권장드려요. 어제 수면 시간이 양호해요.
         </div>
+        <div className="flex justify-center mt-4">
+          <button className="bg-green-400 px-20 py-1 rounded-full text-sm">코멘트 음성 읽기</button>
+        </div>
       </div>
     </div>
   );

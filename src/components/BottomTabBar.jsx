@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, HeartPulse, Bell, User } from 'lucide-react';
+import { Home, HeartPulse, Map, Bell, User } from 'lucide-react';
 
 const BottomTabBar = ({ activeTab, setActiveTab }) => {
   const tabClass = (tab) =>
@@ -16,6 +16,10 @@ const BottomTabBar = ({ activeTab, setActiveTab }) => {
       <button className={tabClass('health')} onClick={() => setActiveTab('health')}>
         <HeartPulse size={20} />
         건강정보
+      </button>
+      <button className={tabClass('location')} onClick={() => setActiveTab('location')}>
+        <Map size={20} />
+        위치
       </button>
       <button className={tabClass('alert')} onClick={() => setActiveTab('alert')}>
         <Bell size={20} />
