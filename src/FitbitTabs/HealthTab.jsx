@@ -30,10 +30,8 @@ const HealthTab = () => {
       });
 
       if (response.status === 200 && response.data.is_success) {
-        console.log('TTS 요청 성공:', response.data.message);
         alert('음성 메시지가 전송되었습니다.');
       } else {
-        console.error('TTS 요청 실패:', response.data.message);
         alert('음성 전송 실패: ' + response.data.message);
       }
     } catch (error) {
@@ -63,7 +61,7 @@ const HealthTab = () => {
           </thead>
           <tbody>
             {healthData.slice().reverse().map((item, index) => (
-              <tr key={index} lassName="border-t">
+              <tr key={index} className="border-t">
                 <td className="py-1">{item.date}</td>
                 <td>{item.steps}</td>
                 <td>{item.sleepHours}</td>
