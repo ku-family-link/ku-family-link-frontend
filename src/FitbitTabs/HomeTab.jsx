@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from '../api/axios';
 
 const HomeTab = () => {
   const [todaySummary, setTodaySummary] = useState(null);
@@ -9,6 +10,36 @@ const HomeTab = () => {
       setTodaySummary(JSON.parse(cached));
     }
   }, []);
+
+  const handleTTS = async (message) => {
+    if (!message) {
+      alert('읽을 메시지가 없습니다.');
+      return;
+    }
+
+    // 1. MQTT로 음성 메시지 전송
+    try {
+      const response = await axios.post('/api/v1/mqtt/message', {
+        topic: 'familylink/tts',
+        message: message,
+      });
+
+      if (response.status === 200 && response.data.is_success) {
+        console.log('TTS 요청 성공:', response.data.message);
+        alert('음성 메시지가 전송되었습니다.');
+      } else {
+        console.error('TTS 요청 실패:', response.data.message);
+        alert('음성 전송 실패: ' + response.data.message);
+      }
+    } catch (error) {
+      console.error('TTS 요청 중 오류 발생:', error);
+      alert('서버 오류로 음성 전송에 실패했습니다.');
+    }
+    
+    // 2. 노트북에서 음성 출력
+    const utterance = new SpeechSynthesisUtterance(message);
+    speechSynthesis.speak(utterance);
+  };
 
   const missionSuccess = todaySummary?.totalSteps >= 3000;
 
@@ -22,7 +53,11 @@ const HomeTab = () => {
         <div className="bg-white rounded-lg p-4 text-left">{todaySummary?.analysis || '오늘의 건강 코멘트를 불러오는 중입니다...'}</div>
         <div className="flex justify-center">
           <button 
-            className="bg-green-400 px-20 py-1 mt-4 rounded-full text-sm">코멘트 음성 읽기
+            className="bg-green-400 px-20 py-1 mt-4 rounded-full text-sm"
+            onClick={() =>
+              handleTTS(todaySummary?.analysis || '오늘의 건강 코멘트를 불러오는 중입니다...')}
+          >
+            코멘트 음성 읽기
           </button>
         </div>
       </div>
