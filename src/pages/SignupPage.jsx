@@ -1,3 +1,4 @@
+import axios from '../api/axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
@@ -12,14 +13,15 @@ export default function SignupPage() {
     name: '',
     relationship: '',
     contact: '',
+    clientageId: '',
   });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleRegister = () => {
-    if (!form.username || !form.password || !form.confirmPassword || !form.name || !form.relationship || !form.contact) {
+  const handleRegister = async() => {
+    if (!form.username || !form.password || !form.confirmPassword || !form.name || !form.relationship || !form.contact || !form.clientageId) {
       alert('모든 항목을 입력해주세요.');
       return;
     }
@@ -28,10 +30,27 @@ export default function SignupPage() {
       return;
     }
 
-    // 여기에 실제 회원가입 처리 로직 (API 등) 넣기
-    console.log('회원가입 성공:', form);
+    try {
+      const response = await axios.post('/api/v1/guardian/auth/signup', {
+        email: form.username,
+        password: form.password,
+        phone: form.contact,
+        name: form.name,
+        relationship: form.relationship,
+        clientageId: form.clientageId,
+      });
+      const { id, clientageId } = response.data;
+      console.log('회원가입 성공:', response.data);
 
-    navigate('/');
+      localStorage.setItem('guardianId', id);
+      localStorage.setItem('clientageId', clientageId);
+
+      alert('회원가입이 완료되었습니다!');
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      alert('회원가입 실패: 이미 존재하는 이메일이거나 서버 오류입니다.');
+    }
   };
 
   const isFormValid = Object.values(form).every((field) => field.trim() !== '') && form.password === form.confirmPassword;
@@ -49,7 +68,7 @@ export default function SignupPage() {
           className="w-full h-12 px-4 rounded-xl bg-green-100 text-gray-800 placeholder-gray-500"
           type="text"
           name="username"
-          placeholder="아이디"
+          placeholder="이메일"
           value={form.username}
           onChange={handleChange}
         />
@@ -91,6 +110,14 @@ export default function SignupPage() {
           name="contact"
           placeholder="연락처"
           value={form.contact}
+          onChange={handleChange}
+        />
+        <input
+          className="w-full h-12 px-4 rounded-xl bg-green-100 text-gray-800 placeholder-gray-500"
+          type="text"
+          name="clientageId"
+          placeholder="Fitbit 사용자 ID"
+          value={form.clientageId}
           onChange={handleChange}
         />
 

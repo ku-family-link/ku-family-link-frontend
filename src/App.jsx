@@ -15,7 +15,7 @@ function App() {
         <Route path="/Signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/home" element={<MainTabsPage />} />
-        <Route path="/Fibit" element={<FitbitTabsPage />} />
+        <Route path="/Fitbit" element={<FitbitTabsPage />} />
       </Routes>
     </Router>
   );

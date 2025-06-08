@@ -1,6 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from '../api/axios';
 
 const HealthTab = () => {
+  const [healthData, setHealthData] = useState([]);
+  const [lastWeekSummary, setLastWeekSummary] = useState(null);
+  const [thisWeekSummary, setThisWeekSummary] = useState(null);
+  const userId = localStorage.getItem('clientageId');
+  
+
+  useEffect(() => {
+    const fetchHealthData = async () => {
+      try {
+        const [dailyRes, lastRes, thisRes] = await Promise.all([
+          axios.get(`/api/v1/users/${userId}/health/all/last-2week`),
+          axios.get(`/api/v1/users/${userId}/health/summary/last-week`),
+          axios.get(`/api/v1/users/${userId}/health/summary/this-week`)
+        ]);
+  
+        setHealthData(dailyRes.data);
+        setLastWeekSummary(lastRes.data);
+        setThisWeekSummary(thisRes.data);
+      } catch (error) {
+        console.error('건강 데이터 불러오기 실패:', error);
+      }
+    };
+  
+    if (userId) fetchHealthData();
+  }, [userId]);
+  
   return (
     <div className="bg-gray-100 pb-20">
       {/* 일별 건강 데이터 */}
@@ -17,20 +44,15 @@ const HealthTab = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className="border-t">
-              <td className="py-1">2025-06-01</td>
-              <td>3,200</td>
-              <td>6.5</td>
-              <td>72</td>
-              <td>✓</td>
-            </tr>
-            <tr className="border-t">
-              <td className="py-1">2025-06-02</td>
-              <td>2,800</td>
-              <td>6.0</td>
-              <td>74</td>
-              <td>✓</td>
-            </tr>
+            {healthData.slice().reverse().map((item, index) => (
+              <tr key={index} lassName="border-t">
+                <td className="py-1">{item.date}</td>
+                <td>{item.steps}</td>
+                <td>{item.sleepHours}</td>
+                <td>{item.heartRate}</td>
+                <td>{item.steps >= 3000 ? '✓' : '✗'}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -38,32 +60,68 @@ const HealthTab = () => {
       {/* 저번주 요약 */}
       <div className="bg-green-200 text-center py-2 font-semibold mt-4">저번주 요약</div>
       <div className="p-3">
-        <div className="bg-white rounded-lg p-4 text-sm space-y-1">
-          <div>평균 걸음 수: 2,950보</div>
-          <div>평균 수면 시간: 5시간 50분</div>
-          <div>평균 심박수: 76bpm</div>
-          <div>미션 성공률: 4/7일 (57%)</div>
-          <div>경고 알림: 3회</div>
-        </div>
+        {lastWeekSummary && healthData.length > 0 ? (
+          <div className="bg-white rounded-lg p-4 text-sm space-y-1">
+            <div>평균 걸음 수: {lastWeekSummary.averageSteps.toLocaleString()}보</div>
+            <div>평균 수면 시간: {Math.floor(lastWeekSummary.averageSleepHours)}시간{" "}{Math.round((lastWeekSummary.averageSleepHours % 1) * 60)}분</div>
+            <div>평균 심박수: {lastWeekSummary.averageRestingHeartRate}bpm</div>
+            <div>
+              미션 성공률: {
+                (() => {
+                  const start = new Date(lastWeekSummary.period.startDate);
+                  const end = new Date(lastWeekSummary.period.endDate);
+                  const filtered = healthData.filter((d) => {
+                    const dDate = new Date(d.date);
+                    return dDate >= start && dDate <= end;
+                  });
+                  const successDays = filtered.filter((d) => d.steps >= 3000).length;
+                  const totalDays = filtered.length;
+                  return `${successDays}/${totalDays}일 (${Math.round((successDays / totalDays) * 100)}%)`;
+                })()
+              }
+            </div>
+            <div>경고 알림: 3회</div>
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500">저번주 요약 정보를 불러오는 중입니다...</div>
+        )}
       </div>
 
       {/* 이번주 요약 */}
       <div className="bg-green-200 text-center py-2 font-semibold mt-4">이번주 요약</div>
       <div className="p-3">
-        <div className="bg-white rounded-lg p-4 text-sm space-y-1">
-          <div>평균 걸음 수: 2,950보</div>
-          <div>평균 수면 시간: 5시간 50분</div>
-          <div>평균 심박수: 76bpm</div>
-          <div>미션 성공률: 4/7일 (57%)</div>
-          <div>경고 알림: 3회</div>
-        </div>
+        {thisWeekSummary ? (
+          <div className="bg-white rounded-lg p-4 text-sm space-y-1">
+            <div>평균 걸음 수: {thisWeekSummary.averageSteps.toLocaleString()}보</div>
+            <div>평균 수면 시간: {Math.floor(thisWeekSummary.averageSleepHours)}시간{" "}{Math.round((thisWeekSummary.averageSleepHours % 1) * 60)}분</div>
+            <div>평균 심박수: {thisWeekSummary.averageRestingHeartRate}bpm</div>
+            <div>
+              미션 성공률: {
+                (() => {
+                  const start = new Date(thisWeekSummary.period.startDate);
+                  const end = new Date(thisWeekSummary.period.endDate);
+                  const filtered = healthData.filter((d) => {
+                    const dDate = new Date(d.date);
+                    return dDate >= start && dDate <= end;
+                  });
+                  const successDays = filtered.filter((d) => d.steps >= 3000).length;
+                  const totalDays = filtered.length;
+                  return `${successDays}/${totalDays}일 (${Math.round((successDays / totalDays) * 100)}%)`;
+                })()
+              }
+            </div>
+            <div>경고 알림: 3회</div>
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500">이번주 요약 정보를 불러오는 중입니다...</div>
+        )}
       </div>
 
       {/* 주간 건강 코멘트 */}
       <div className="bg-green-200 text-center py-2 font-semibold mt-4">주간 건강 코멘트</div>
       <div className="p-3">
         <div className="bg-white rounded-lg p-4 text-sm mb-10">
-          최근 3일간 걸음 수가 약간 감소 추세입니다. 가능하다면 가벼운 산책을 권장드려요. 어제 수면 시간이 양호해요.
+          {thisWeekSummary?.comment || '주간 코멘트를 불러오는 중입니다...'}
         </div>
         <div className="flex justify-center mt-4">
           <button className="bg-green-400 px-20 py-1 rounded-full text-sm">코멘트 음성 읽기</button>

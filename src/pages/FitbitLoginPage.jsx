@@ -1,28 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import fitbitLogo from '../assets/Fitbit.png';
 import BackButton from '../components/BackButton';
 import BottomBar from '../components/BottomBar';
 
 export default function FitbitLoginPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', password: '' });
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const [username, setUsername] = useState('');
 
   const handleLogin = () => {
-    if (!form.username || !form.password) {
-      alert('아이디와 비밀번호를 모두 입력해주세요.');
+    if (username !== 'CLC3TK') {
+      alert('올바른 아이디를 입력해주세요.');
       return;
     }
-
-    // 로그인 성공 처리 (예: API 호출 후 성공 시)
-    console.log('로그인 성공:', form);
-
-    navigate('/Fibit'); // 홈 페이지로 이동
+    // 로그인 성공 처리
+    localStorage.setItem('clientageId', username);
+    console.log('로그인 성공:', username);
+    navigate('/Fitbit'); // 홈(핏빗 대시보드) 페이지 이동
   };
 
   return (
@@ -48,23 +42,15 @@ export default function FitbitLoginPage() {
           type="text"
           name="username"
           placeholder="아이디"
-          value={form.username}
-          onChange={handleChange}
-        />
-        <input
-          className="w-full h-12 px-4 rounded-xl bg-green-100 text-gray-800 placeholder-gray-500"
-          type="password"
-          name="password"
-          placeholder="비밀번호"
-          value={form.password}
-          onChange={handleChange}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <button
           className={`w-full h-12 mt-4 rounded-2xl text-lg text-gray-800 ${
-            form.username && form.password ? 'bg-green-200 font-semibold' : 'bg-gray-300 cursor-not-allowed text-white'
+            username === 'CLC3TK' ? 'bg-green-200 font-semibold' : 'bg-gray-300 cursor-not-allowed text-white'
           }`}
-          disabled={!form.username || !form.password}
+          disabled={username !== 'CLC3TK'}
           onClick={handleLogin}
         >
           로그인
