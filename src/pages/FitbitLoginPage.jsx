@@ -3,19 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import fitbitLogo from '../assets/Fitbit.png';
 import BackButton from '../components/BackButton';
 import BottomBar from '../components/BottomBar';
+import axios from '../api/axios';
 
 export default function FitbitLoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (username !== 'CLC3TK') {
       alert('올바른 아이디를 입력해주세요.');
       return;
     }
-    // 로그인 성공 처리
+
+    const healthSummary = await axios.get(`/api/v1/users/${username}/health/summary/today`);
+    const [dailyRes, lastRes, thisRes] = await Promise.all([
+      axios.get(`/api/v1/users/${username}/health/all/last-2week`),
+      axios.get(`/api/v1/users/${username}/health/summary/last-week`),
+      axios.get(`/api/v1/users/${username}/health/summary/this-week`)
+    ]);
+    const fitbitRes = await axios.get(`/api/v1/users/${username}/fitbit`);
+
     localStorage.setItem('clientageId', username);
-    console.log('로그인 성공:', username);
+    localStorage.setItem('todaySummary', JSON.stringify(healthSummary.data));
+      
+    localStorage.setItem('healthData', JSON.stringify(dailyRes.data));
+    localStorage.setItem('lastWeekSummary', JSON.stringify(lastRes.data));
+    localStorage.setItem('thisWeekSummary', JSON.stringify(thisRes.data));
+      
+    localStorage.setItem('fitbitInfo', JSON.stringify(fitbitRes.data));
     navigate('/Fitbit'); // 홈(핏빗 대시보드) 페이지 이동
   };
 

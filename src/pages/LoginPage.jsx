@@ -27,9 +27,24 @@ export default function LoginPage() {
       });
 
       const { id, clientageId } = response.data;
+
+      const healthSummary = await axios.get(`/api/v1/users/${clientageId}/health/summary/today`);
+      const [dailyRes, lastRes, thisRes] = await Promise.all([
+        axios.get(`/api/v1/users/${clientageId}/health/all/last-2week`),
+        axios.get(`/api/v1/users/${clientageId}/health/summary/last-week`),
+        axios.get(`/api/v1/users/${clientageId}/health/summary/this-week`)
+      ]);
+      const guardianRes = await axios.get(`/api/v1/users/${id}/guardian`);
+
       localStorage.setItem('guardianId', id);
       localStorage.setItem('clientageId', clientageId);
-      console.log('로그인 성공:', id, clientageId);
+      localStorage.setItem('todaySummary', JSON.stringify(healthSummary.data));
+      
+      localStorage.setItem('healthData', JSON.stringify(dailyRes.data));
+      localStorage.setItem('lastWeekSummary', JSON.stringify(lastRes.data));
+      localStorage.setItem('thisWeekSummary', JSON.stringify(thisRes.data));
+      
+      localStorage.setItem('guardianInfo', JSON.stringify(guardianRes.data));
 
       navigate('/home');
     } catch (error) {

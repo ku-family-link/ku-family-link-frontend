@@ -1,32 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import axios from '../api/axios';
 
 const HealthTab = () => {
   const [healthData, setHealthData] = useState([]);
   const [lastWeekSummary, setLastWeekSummary] = useState(null);
   const [thisWeekSummary, setThisWeekSummary] = useState(null);
-  const userId = localStorage.getItem('clientageId');
-  
 
   useEffect(() => {
-    const fetchHealthData = async () => {
-      try {
-        const [dailyRes, lastRes, thisRes] = await Promise.all([
-          axios.get(`/api/v1/users/${userId}/health/all/last-2week`),
-          axios.get(`/api/v1/users/${userId}/health/summary/last-week`),
-          axios.get(`/api/v1/users/${userId}/health/summary/this-week`)
-        ]);
+    const cachedHealth = localStorage.getItem('healthData');
+    const cachedLast = localStorage.getItem('lastWeekSummary');
+    const cachedThis = localStorage.getItem('thisWeekSummary');
   
-        setHealthData(dailyRes.data);
-        setLastWeekSummary(lastRes.data);
-        setThisWeekSummary(thisRes.data);
-      } catch (error) {
-        console.error('건강 데이터 불러오기 실패:', error);
-      }
-    };
-  
-    if (userId) fetchHealthData();
-  }, [userId]);
+    if (cachedHealth) setHealthData(JSON.parse(cachedHealth));
+    if (cachedLast) setLastWeekSummary(JSON.parse(cachedLast));
+    if (cachedThis) setThisWeekSummary(JSON.parse(cachedThis));
+  }, []);
   
   return (
     <div className="bg-gray-100 pb-20">

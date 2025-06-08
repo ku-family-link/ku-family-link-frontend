@@ -1,27 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import axios from '../api/axios';
 
 const HomeTab = () => {
   const [todaySummary, setTodaySummary] = useState(null);
-  const userId = localStorage.getItem('clientageId');
-
+  
   useEffect(() => {
-    const fetchTodaySummary = async () => {
-      try {
-        const res = await axios.get(`/api/v1/users/${userId}/health/summary/today`,
-          {
-            headers: { 'Content-Type': 'application/json' }
-          }
-        );
-        setTodaySummary(res.data);
-      } catch (error) {
-        console.error('오늘 건강 데이터 불러오기 실패:', error);
-      }
-    };
-
-    if (userId) fetchTodaySummary();
-  }, [userId]);
-
+    const cached = localStorage.getItem('todaySummary');
+    if (cached) {
+      setTodaySummary(JSON.parse(cached));
+    }
+  }, []);
+  
   const missionSuccess = todaySummary?.totalSteps >= 3000;
 
   return (
