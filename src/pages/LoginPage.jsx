@@ -22,8 +22,6 @@ export default function LoginPage() {
       const response = await axios.post('/api/v1/guardian/auth/login', {
         email: form.username,
         password: form.password,
-      }, {
-      headers: { 'Content-Type': 'application/json' }
       });
 
       const { id, clientageId } = response.data;
