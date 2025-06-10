@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import fitbitLogo from '../assets/Fitbit.png';
 import BottomBar from '../components/BottomBar';
+//import axios from '../api/axios';
 
 export default function LoginSelect() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function LoginSelect() {
         {/* Fitbit Login Button */}
         <button 
           className="flex items-center w-48 h-10 bg-green-200 rounded-full px-4"
-          onClick={() => navigate('/FitbitLogin')}
+          onClick={() => {window.location.href = 'https://familylink.click/api/v1/oauth2/fitbit/login'}}
         >
           <img
             src={fitbitLogo}

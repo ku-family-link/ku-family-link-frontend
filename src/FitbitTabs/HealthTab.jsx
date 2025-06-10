@@ -30,8 +30,10 @@ const HealthTab = () => {
       });
 
       if (response.status === 200 && response.data.is_success) {
+        console.log('TTS 요청 성공:', response.data.message);
         alert('음성 메시지가 전송되었습니다.');
       } else {
+        console.error('TTS 요청 실패:', response.data.message);
         alert('음성 전송 실패: ' + response.data.message);
       }
     } catch (error) {
@@ -55,8 +57,15 @@ const HealthTab = () => {
               <th className="py-1">날짜</th>
               <th>걸음 수</th>
               <th>수면 시간<br />(시간)</th>
-              <th>평균<br />심박수</th>
-              <th>미션 수행<br />여부</th>
+              <th>심박수</th>
+              <th>소모<br/>칼로리</th>
+              <th>비활동 시간</th>
+              <th>활동 시간</th>
+              <th>수면 효율</th>
+              <th>체중</th>
+              <th>BMI</th>
+              <th>물 섭취량</th>
+              <th>체지방률</th>
             </tr>
           </thead>
           <tbody>
@@ -66,7 +75,14 @@ const HealthTab = () => {
                 <td>{item.steps}</td>
                 <td>{item.sleepHours}</td>
                 <td>{item.heartRate}</td>
-                <td>{item.steps >= 3000 ? '✓' : '✗'}</td>
+                <td>{item.caloriesOut.toLocaleString()} kcal</td>
+                <td>{item.sendentaryMinutes}분</td>
+                <td>{item.activeMinutes}분</td>
+                <td>{item.sleepEfficiency != null ? item.sleepEfficiency.toFixed(0) + '%' : '-'}</td>
+                <td>{item.weight.toFixed(1)} kg</td>
+                <td>{item.bmi.toFixed(1)}</td>
+                <td>{item.waterIntake.toFixed(1)}ml</td>
+                <td>{item.bodyFat.toFixed(1)}%</td>
               </tr>
             ))}
           </tbody>
@@ -81,6 +97,13 @@ const HealthTab = () => {
             <div>평균 걸음 수: {lastWeekSummary.averageSteps.toLocaleString()}보</div>
             <div>평균 수면 시간: {Math.floor(lastWeekSummary.averageSleepHours)}시간{" "}{Math.round((lastWeekSummary.averageSleepHours % 1) * 60)}분</div>
             <div>평균 심박수: {lastWeekSummary.averageRestingHeartRate}bpm</div>
+            <div>평균 소모 칼로리: {lastWeekSummary.averageCaloriesOut.toLocaleString()} kcal</div>
+            <div>평균 비활동 시간: {lastWeekSummary.averageSendentaryMinutes.toFixed(1)}분</div>
+            <div>평균 활동 시간: {lastWeekSummary.averageActiveMinutes.toFixed(1)}분</div>
+            <div>평균 체중: {lastWeekSummary.averageWeight.toFixed(1)}kg</div>
+            <div>평균 BMI: {lastWeekSummary.averageBmi.toFixed(1)}</div>
+            <div>평균 물 섭취량: {lastWeekSummary.averageWaterIntake.toFixed(1)}ml</div>
+            <div>평균 체지방률: {lastWeekSummary.averageBodyFat.toFixed(1)}%</div>
             <div>
               미션 성공률: {
                 (() => {
@@ -96,7 +119,6 @@ const HealthTab = () => {
                 })()
               }
             </div>
-            <div>경고 알림: 3회</div>
           </div>
         ) : (
           <div className="text-sm text-gray-500">저번주 요약 정보를 불러오는 중입니다...</div>
@@ -111,6 +133,13 @@ const HealthTab = () => {
             <div>평균 걸음 수: {thisWeekSummary.averageSteps.toLocaleString()}보</div>
             <div>평균 수면 시간: {Math.floor(thisWeekSummary.averageSleepHours)}시간{" "}{Math.round((thisWeekSummary.averageSleepHours % 1) * 60)}분</div>
             <div>평균 심박수: {thisWeekSummary.averageRestingHeartRate}bpm</div>
+            <div>평균 소모 칼로리: {thisWeekSummary.averageCaloriesOut.toLocaleString()} kcal</div>
+            <div>평균 비활동 시간: {thisWeekSummary.averageSendentaryMinutes.toFixed(1)}분</div>
+            <div>평균 활동 시간: {thisWeekSummary.averageActiveMinutes.toFixed(1)}분</div>
+            <div>평균 체중: {thisWeekSummary.averageWeight.toFixed(1)}kg</div>
+            <div>평균 BMI: {thisWeekSummary.averageBmi.toFixed(1)}</div>
+            <div>평균 물 섭취량: {thisWeekSummary.averageWaterIntake.toFixed(1)}mL</div>
+            <div>평균 체지방률: {thisWeekSummary.averageBodyFat.toFixed(1)}%</div>
             <div>
               미션 성공률: {
                 (() => {
@@ -126,7 +155,6 @@ const HealthTab = () => {
                 })()
               }
             </div>
-            <div>경고 알림: 3회</div>
           </div>
         ) : (
           <div className="text-sm text-gray-500">이번주 요약 정보를 불러오는 중입니다...</div>

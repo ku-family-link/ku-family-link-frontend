@@ -33,6 +33,8 @@ export default function LoginPage() {
         axios.get(`/api/v1/users/${clientageId}/health/summary/this-week`)
       ]);
       const guardianRes = await axios.get(`/api/v1/users/${id}/guardian`);
+      const notificationsRes = await axios.get(`/api/v1/notifications/${clientageId}`);
+      const missionTodayRes = await axios.get(`/api/v1/users/${clientageId}/mission/today`);
 
       localStorage.setItem('guardianId', id);
       localStorage.setItem('clientageId', clientageId);
@@ -43,6 +45,9 @@ export default function LoginPage() {
       localStorage.setItem('thisWeekSummary', JSON.stringify(thisRes.data));
       
       localStorage.setItem('guardianInfo', JSON.stringify(guardianRes.data));
+
+      localStorage.setItem('notifications', JSON.stringify(notificationsRes.data));
+      localStorage.setItem('todayMission', JSON.stringify(missionTodayRes.data));
 
       navigate('/home');
     } catch (error) {
