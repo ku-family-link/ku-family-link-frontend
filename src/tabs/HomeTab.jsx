@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from '../api/axios'
 
 const HomeTab = () => {
   const [todaySummary, setTodaySummary] = useState(null);
@@ -15,6 +16,19 @@ const HomeTab = () => {
   }, []);
   
   const missionSuccess = todayMission?.completed;
+
+  const sendEmergencyAlert = async () => {
+    try {
+      await axios.post('/api/v1/mqtt/message', {
+        topic: 'familylink/emergency',
+        message: 'message',
+      });
+      alert('🚨 비상 알림이 전송되었습니다.');
+    } catch (error) {
+      console.error('비상 알림 실패:', error);
+      alert('⚠️ 비상 알림 전송에 실패했습니다.');
+    }
+  };
 
   return (
     <div className="bg-gray-100 pb-20">
@@ -56,7 +70,8 @@ const HomeTab = () => {
         <div className="bg-white rounded-lg p-4">건대병원 (2.3km)</div>
       </div>
       <div className="flex justify-center mt-10">
-        <button 
+        <button
+          onClick={sendEmergencyAlert}
           className="bg-green-400 px-12 py-3 mt-4 rounded-2xl text-md">비상 알림 버튼
         </button>
       </div>
