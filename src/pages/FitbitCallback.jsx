@@ -7,7 +7,7 @@ export default function FitbitCallback() {
 
   useEffect(() => {
     const fetchData = async () => {
-      //try {
+      try {
         // 1. URL에서 code 가져오기
         const urlParams = new URLSearchParams(window.location.search);
         console.log('🔍 URLSearchParams:', urlParams.toString());
@@ -16,7 +16,7 @@ export default function FitbitCallback() {
         if (!code) throw new Error('코드 없음');
 
         // 2. 서버에 code 전송 → 액세스 토큰 + 사용자 식별자 받아오기
-        //const tokenRes = await axios.post('/api/v1/oauth2/fitbit/callback', { code });
+        //const tokenRes = await axios.post('/api/v1/oauth2/fitbit/callback', { params: code });
         const tokenRes = await axios.get('/api/v1/oauth2/fitbit/callback', { params: { code } });
         console.log('🔍 Fitbit 인증 응답:', tokenRes);
         console.log('🔍 Fitbit 인증 응답:', tokenRes.data);
@@ -24,7 +24,8 @@ export default function FitbitCallback() {
         console.log('✅ Fitbit userId:', userId);
 
         // 3. 사용자 데이터 요청
-        const healthSummary = await axios.get(`/api/v1/users/${userId}/health/summary/today`);
+        //const healthSummary = await axios.get(`/api/v1/users/${userId}/health/summary/today`);
+  
         const [dailyRes, lastRes, thisRes] = await Promise.all([
           axios.get(`/api/v1/users/${userId}/health/all/last-2week`),
           axios.get(`/api/v1/users/${userId}/health/summary/last-week`),
@@ -36,7 +37,7 @@ export default function FitbitCallback() {
 
         // 4. 로컬 스토리지 저장
         localStorage.setItem('clientageId', userId);
-        localStorage.setItem('todaySummary', JSON.stringify(healthSummary.data));
+        //localStorage.setItem('todaySummary', JSON.stringify(healthSummary.data));
         localStorage.setItem('healthData', JSON.stringify(dailyRes.data));
         localStorage.setItem('lastWeekSummary', JSON.stringify(lastRes.data));
         localStorage.setItem('thisWeekSummary', JSON.stringify(thisRes.data));
@@ -45,15 +46,15 @@ export default function FitbitCallback() {
         localStorage.setItem('todayMission', JSON.stringify(missionTodayRes.data));
 
         navigate('/fitbit'); // Fitbit 대시보드 페이지로 이동
-      // } catch (error) {
-      //   console.error('Fitbit 인증 실패:', error);
-      //   if (error.response) {
-      //     console.error("🔍 상태 코드:", error.response.status);
-      //     console.error("🔍 응답 데이터:", error.response.data);
-      //   }
-      //   alert('인증 중 오류가 발생했습니다.');
-      //   navigate('/');
-      // }
+      } catch (error) {
+        console.error('Fitbit 인증 실패:', error);
+        if (error.response) {
+          console.error("🔍 상태 코드:", error.response.status);
+          console.error("🔍 응답 데이터:", error.response.data);
+        }
+        alert('인증 중 오류가 발생했습니다.');
+        navigate('/');
+      }
     };
 
     fetchData();

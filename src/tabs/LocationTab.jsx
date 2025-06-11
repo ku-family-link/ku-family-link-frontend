@@ -5,7 +5,7 @@ const LocationTab = () => {
 
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_API}&autoload=false`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.KAKAO_API}&autoload=false`;
     script.async = true;
     document.head.appendChild(script);
 
