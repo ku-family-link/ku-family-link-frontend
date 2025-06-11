@@ -24,7 +24,7 @@ export default function FitbitCallback() {
         console.log('✅ Fitbit userId:', userId);
 
         // 3. 사용자 데이터 요청
-        //const healthSummary = await axios.get(`/api/v1/users/${userId}/health/summary/today`);
+        const healthSummary = await axios.get(`/api/v1/users/${userId}/health/summary/today`);
   
         const [dailyRes, lastRes, thisRes] = await Promise.all([
           axios.get(`/api/v1/users/${userId}/health/all/last-2week`),
@@ -37,7 +37,7 @@ export default function FitbitCallback() {
 
         // 4. 로컬 스토리지 저장
         localStorage.setItem('clientageId', userId);
-        //localStorage.setItem('todaySummary', JSON.stringify(healthSummary.data));
+        localStorage.setItem('todaySummary', JSON.stringify(healthSummary.data));
         localStorage.setItem('healthData', JSON.stringify(dailyRes.data));
         localStorage.setItem('lastWeekSummary', JSON.stringify(lastRes.data));
         localStorage.setItem('thisWeekSummary', JSON.stringify(thisRes.data));
